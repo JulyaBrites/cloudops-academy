@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CloudOps Academy — Infra, Redes & AWS Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #FAF7F5;
+      --bg-card: #FFFFFF;
+      --bg-soft: #F4ECEA;
+      --border-soft: #EBDCD8;
+      --text-main: #33292B;
+      --text-muted: #756468;
+      --primary: #C96B78;
+      --primary-hover: #B45764;
+      --primary-soft: #F9E8EB;
+      --sage: #5B8C78;
+      --sage-soft: #E5F1EC;
+      --amber: #C68B59;
+      --amber-soft: #FBF1E6;
+      --shadow: 0 4px 20px rgba(51, 41, 43, 0.05);
+      --radius: 16px;
+    }
+
+    body.sepia-mode {
+      --bg-main: #F3EAD8;
+      --bg-card: #FAF3E6;
+      --bg-soft: #EAE0CC;
+      --border-soft: #DDD0B8;
+      --text-main: #3A3024;
+      --text-muted: #756856;
+      --primary: #B85D69;
+      --primary-soft: #EFE0D8;
+      --sage: #517D6B;
+      --sage-soft: #E1EAE0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      display: flex;
+      min-height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* Sidebar */
+    aside {
+      width: 270px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border-soft);
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-soft);
+      margin-bottom: 20px;
+    }
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), #DF8A95);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(201, 107, 120, 0.25);
+    }
+    .brand-text h1 { font-size: 16px; font-weight: 700; }
+    .brand-text p { font-size: 12px; color: var(--text-muted); }
+
+    nav { display: flex; flex-direction: column; gap: 6px; }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover { background: var(--bg-soft); color: var(--text-main); }
+    .nav-btn.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .sidebar-footer {
+      border-top: 1px solid var(--border-soft);
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sepia-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-soft);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border-soft);
+      color: var(--text-main);
+    }
+
+    /* Main */
+    main {
+      flex: 1;
+      padding: 28px 36px;
+      max-width: 1250px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    header.topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 26px;
+    }
+    .welcome h2 { font-size: 24px; font-weight: 700; }
+    .welcome p { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+
+    .exam-badge {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      padding: 10px 16px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow);
+    }
+    .exam-badge input {
+      border: 1px solid var(--border-soft);
+      background: var(--bg-main);
+      color: var(--text-main);
+      padding: 5px 8px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 12px;
+    }
+
+    /* Sections */
+    .section { display: none; animation: fadeIn 0.25s ease; }
+    .section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Cards & Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    .kpi-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
+    .kpi-value { font-size: 28px; font-weight: 700; margin: 8px 0 4px; color: var(--text-main); }
+    .kpi-sub { font-size: 12px; color: var(--sage); font-weight: 600; }
+
+    .progress-bar-wrap {
+      width: 100%;
+      height: 10px;
+      background: var(--bg-soft);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--sage));
+      border-radius: 99px;
+      transition: width 0.3s ease;
+    }
+
+    /* Sprint AWS Checklist */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      aside { width: 100%; height: auto; position: static; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      margin-bottom: 10px;
+      background: var(--bg-main);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .checklist-item:hover { border-color: var(--primary); }
+    .checklist-item.done {
+      background: var(--sage-soft);
+      border-color: rgba(91, 140, 120, 0.35);
+    }
+    .checklist-item input[type="checkbox"] {
+      accent-color: var(--sage);
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      cursor: pointer;
+    }
+
+    /* Schedule Tabs */
+    .day-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .day-tab {
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .day-tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+    .tag.sage { background: var(--sage-soft); color: var(--sage); }
+    .tag.amber { background: var(--amber-soft); color: var(--amber); }
+
+    .yt-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: none;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-soft { background: var(--bg-soft); color: var(--text-main); border: 1px solid var(--border-soft); }
+    .btn-soft:hover { border-color: var(--primary); }
+
+    textarea, input[type="text"], input[type="number"], select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      background: var(--bg-main);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    /* Cheat Sheets */
+    .cheat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    code {
+      font-family: 'Fira Code', monospace;
+      background: var(--bg-soft);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--primary);
+    }
+
+    /* Quiz */
+    .quiz-option {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 12px 16px;
+      margin-top: 8px;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      background: var(--bg-main);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .quiz-option:hover { border-color: var(--primary); }
+    .quiz-option.correct { background: var(--sage-soft); border-color: var(--sage); color: var(--sage); font-weight: 600; }
+    .quiz-option.wrong { background: #FDECEC; border-color: #D9534F; color: #B52B27; }
+  </style>
+</head>
+<body>
+  <aside>
+    <div>
+      <div class="brand">
+        <div class="brand-icon">☁️</div>
+        <div class="brand-text">
+          <h1>CloudOps Academy</h1>
+          <p>Infra • Redes • AWS Hub</p>
+        </div>
+      </div>
+
+      <nav>
+        <button class="nav-btn active" onclick="switchTab('dashboard', this)">🌸 Visão Geral & Prova AWS</button>
+        <button class="nav-btn" onclick="switchTab('schedule', this)">📅 Cronograma Semanal</button>
+        <button class="nav-btn" onclick="switchTab('cheatsheets', this)">📚 Fichas de Estudo Rápido</button>
+        <button class="nav-btn" onclick="switchTab('exams', this)">🎯 Simulados & Notas</button>
+        <button class="nav-btn" onclick="switchTab('career', this)">💼 Carreira & Estágios</button>
+      </nav>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="sepia-toggle" onclick="toggleSepia()">
+        <span>🕯️ Leitura Noturna (Sepia)</span>
+        <span id="sepia-status">OFF</span>
+      </button>
+      <div style="font-size:11px; color:var(--text-muted); text-align:center;">
+        Progresso salvo localmente no seu navegador ✨
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <div class="welcome">
+        <h2>Olá, Futura Engenheira de Cloud & Infra! ✨</h2>
+        <p>Gestão de TI • Foco total em certificações, provas da faculdade e estágio.</p>
+      </div>
+      <div class="exam-badge">
+        <div>
+          <div style="font-size:11px; color:var(--text-muted); font-weight:700;">PROVA AWS NA PRÓXIMA SEMANA</div>
+          <div id="countdown-text" style="font-size:15px; font-weight:700; color:var(--primary);">Faltam 7 dias</div>
+        </div>
+        <input type="date" id="exam-date-input" onchange="updateCountdown()" title="Ajustar data da prova">
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="section active">
+      <div class="kpi-grid">
+        <div class="card">
+          <div class="kpi-label">Progresso da Semana</div>
+          <div class="kpi-value" id="kpi-weekly-pct">0%</div>
+          <div class="kpi-sub" id="kpi-weekly-sub">0 de 18 tópicos concluídos</div>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="kpi-weekly-bar" style="width:0%"></div></div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">Meta de Questões (Seg–Sáb)</div>
+          <div class="kpi-value" id="kpi-questions">0 / 150</div>
+          <div class="kpi-sub">Foco em fixação ativa</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">Média nos Simulados</div>
+          <div class="kpi-value" id="kpi-avg-score">—</div>
+          <div class="kpi-sub">Meta de aprovação: ≥ 80%</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">Sprint Prova AWS</div>
+          <div class="kpi-value" id="kpi-aws-sprint">0 / 8</div>
+          <div class="kpi-sub">Domínios essenciais revisados</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-bottom:6px;">🚀 Sprint Intensivo: Prova AWS (Próxima Semana)</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Marque cada domínio conforme revisar os conceitos e modelos de cobrança:</p>
+          <div id="aws-sprint-list"></div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-bottom:6px;">🎥 Seus Canais Base & Método</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Acesso rápido às playlists para combinar com o material da faculdade:</p>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div style="padding:14px; border-radius:12px; background:var(--bg-main); border:1px solid var(--border-soft);">
+              <strong>Curso em Vídeo (Gustavo Guanabara)</strong>
+              <p style="font-size:12px; color:var(--text-muted); margin:4px 0 10px;">Ideal para fundamentos de Redes de Computadores, Hardware, Linux e Lógica.</p>
+              <a class="btn btn-soft" href="https://www.youtube.com/@cursoemvideo/playlists" target="_blank">Abrir Playlists Curso em Vídeo ↗</a>
+            </div>
+            <div style="padding:14px; border-radius:12px; background:var(--bg-main); border:1px solid var(--border-soft);">
+              <strong>Miak Biazi (Infra, Redes & Cloud)</strong>
+              <p style="font-size:12px; color:var(--text-muted); margin:4px 0 10px;">Excelente para prática de infraestrutura, virtualização, redes aplicadas e cloud.</p>
+              <a class="btn btn-soft" href="https://www.youtube.com/results?search_query=Miak+Biazi" target="_blank">Buscar Aulas Miak Biazi ↗</a>
+            </div>
+            <div style="padding:14px; border-radius:12px; background:var(--primary-soft); border:1px solid var(--border-soft);">
+              <strong style="color:var(--primary);">💡 Regra de Ouro 40/60</strong>
+              <p style="font-size:12px; color:var(--text-main); margin-top:4px;">40% do tempo assistindo aula/lendo PDF da faculdade + 60% resolvendo questões e anotando os erros.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCHEDULE -->
+    <section id="schedule" class="section">
+      <div class="day-tabs" id="day-tabs"></div>
+      <div id="day-content" class="card"></div>
+    </section>
+
+    <!-- CHEAT SHEETS -->
+    <section id="cheatsheets" class="section">
+      <div class="card" style="margin-bottom:16px;">
+        <h3>📚 Fichas de Consulta Rápida (Resumo de Alta Nota)</h3>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom:10px;">Pesquise portas, comandos Linux, serviços AWS ou frameworks de Gestão de TI:</p>
+        <input type="text" id="cheat-search" placeholder="Ex: SSH, S3, 443, chmod, ITIL, IAM, VPC..." oninput="renderCheatsheets()">
+      </div>
+      <div class="cheat-grid" id="cheat-grid"></div>
+    </section>
+
+    <!-- EXAMS -->
+    <section id="exams" class="section">
+      <div class="grid-2">
+        <div class="card">
+          <h3>🎯 Mini-Simulado AWS & Redes (10 Questões)</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Teste seus conhecimentos agora com explicação imediata:</p>
+          <div id="quiz-container"></div>
+          <div style="margin-top:16px; display:flex; gap:10px;">
+            <button class="btn btn-primary" onclick="finishQuiz()">Finalizar & Salvar Nota</button>
+            <button class="btn btn-soft" onclick="resetQuiz()">Refazer Simulado</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>📈 Registro de Notas & Simulados Externos</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Registre notas de simulados AWS, provas da faculdade ou listas de questões:</p>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div>
+              <label style="font-size:12px; font-weight:600;">Nome da Prova/Simulado</label>
+              <input type="text" id="score-title" placeholder="Ex: Simulado AWS #1">
+            </div>
+            <div>
+              <label style="font-size:12px; font-weight:600;">Nota / Aproveitamento (%)</label>
+              <input type="number" id="score-val" min="0" max="100" placeholder="Ex: 85">
+            </div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:12px;" onclick="addManualScore()">+ Adicionar Nota</button>
+
+          <div id="score-chart-box" style="margin-top:20px;"></div>
+          <div id="score-history-list" style="margin-top:14px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAREER -->
+    <section id="career" class="section">
+      <div class="grid-2">
+        <div class="card">
+          <h3>💼 Checklist para Conquistar Estágio em Infra / Cloud</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Projetos práticos e postura que destacam estudantes de Gestão de TI:</p>
+          <div id="career-checklist"></div>
+        </div>
+
+        <div class="card">
+          <h3>🎤 Perguntas Clássicas de Entrevista Técnica</h3>
+          <div style="display:flex; flex-direction:column; gap:12px; margin-top:12px;">
+            <div style="padding:14px; border-radius:12px; background:var(--bg-main); border:1px solid var(--border-soft);">
+              <strong>1. Qual a diferença entre TCP e UDP?</strong>
+              <p style="font-size:13px; color:var(--text-muted); margin-top:6px;"><strong>Resposta:</strong> TCP é orientado à conexão, garante entrega e ordem dos pacotes (ex: HTTP/HTTPS, SSH). UDP é sem conexão, mais rápido e sem retransmissão, ideal para streaming, DNS e VoIP.</p>
+            </div>
+            <div style="padding:14px; border-radius:12px; background:var(--bg-main); border:1px solid var(--border-soft);">
+              <strong>2. O que é o Modelo de Responsabilidade Compartilhada da AWS?</strong>
+              <p style="font-size:13px; color:var(--text-muted); margin-top:6px;"><strong>Resposta:</strong> A AWS é responsável pela segurança <em>DA</em> nuvem (hardware, data centers, rede física). O cliente é responsável pela segurança <em>NA</em> nuvem (dados, IAM, regras de firewall/Security Groups e atualização do SO em EC2).</p>
+            </div>
+            <div style="padding:14px; border-radius:12px; background:var(--bg-main); border:1px solid var(--border-soft);">
+              <strong>3. O que acontece quando você digita um site no navegador?</strong>
+              <p style="font-size:13px; color:var(--text-muted); margin-top:6px;"><strong>Resposta:</strong> Resolução DNS para descobrir o IP → Three-way handshake TCP → Negociação TLS (HTTPS) → Requisição HTTP GET → Resposta do servidor e renderização.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const awsSprintDomains = [
+      { id: 'aws1', title: 'Conceitos de Nuvem & Global Infrastructure', desc: 'Regiões, Availability Zones (AZs), Edge Locations, CapEx vs OpEx.' },
+      { id: 'aws2', title: 'IAM & Segurança na AWS', desc: 'Usuários, Grupos, Roles, Policies JSON, MFA e Root Account.' },
+      { id: 'aws3', title: 'Compute: EC2, Auto Scaling & Elastic Load Balancer', desc: 'Tipos de instâncias (On-Demand, Reserved, Spot), Security Groups.' },
+      { id: 'aws4', title: 'Storage: S3, EBS e EFS', desc: 'Classes de armazenamento S3 (Standard, Glacier), versionamento e blocos vs arquivos.' },
+      { id: 'aws5', title: 'Networking: VPC, Subnets, Route Tables & Gateways', desc: 'Internet Gateway, NAT Gateway, NACLs vs Security Groups, Route 53.' },
+      { id: 'aws6', title: 'Bancos de Dados: RDS, DynamoDB & ElastiCache', desc: 'Relacional (SQL) vs NoSQL, Multi-AZ (alta disponibilidade) vs Read Replicas.' },
+      { id: 'aws7', title: 'Serverless & Containers: Lambda, ECS & EKS', desc: 'Computação orientada a eventos sem gerenciar servidores.' },
+      { id: 'aws8', title: 'Well-Architected Framework & Billing/Pricing', desc: 'Os 6 pilares, AWS Organizations, Consolidated Billing, TCO e Cost Explorer.' }
+    ];
+
+    const scheduleData = {
+      seg: {
+        day: 'Segunda-feira',
+        focus: 'Fundamentos de Redes, Protocolos & Modelos OSI / TCP-IP',
+        questions: 25,
+        topics: [
+          'Camadas do Modelo OSI (7 camadas) vs Arquitetura TCP/IP (4 camadas)',
+          'Endereçamento IPv4, IPv6, MAC Address e resolução ARP',
+          'Protocolos essenciais: HTTP/HTTPS, DNS, DHCP, SSH, FTP, SMTP, ICMP'
+        ],
+        channel: 'Curso em Vídeo (Redes de Computadores) + Slides Faculdade',
+        searchUrl: 'https://www.youtube.com/results?search_query=curso+em+video+redes+de+computadores'
+      },
+      ter: {
+        day: 'Terça-feira',
+        focus: 'Roteamento, Switching, Sub-redes CIDR & VLANs',
+        questions: 25,
+        topics: [
+          'Cálculo de sub-redes IPv4 e notação CIDR (/24, /26, /28)',
+          'Diferença entre Switch (Camada 2) e Roteador (Camada 3)',
+          'Tabelas de roteamento estático/dinâmico, NAT e segmentação com VLANs'
+        ],
+        channel: 'Miak Biazi + Laboratório Cisco Packet Tracer',
+        searchUrl: 'https://www.youtube.com/results?search_query=Miak+Biazi+redes+roteamento'
+      },
+      qua: {
+        day: 'Quarta-feira',
+        focus: 'Linux Admin, Terminal, Permissões & Virtualização',
+        questions: 25,
+        topics: [
+          'Hierarquia de diretórios Linux (/, /etc, /var, /home) e comandos essenciais',
+          'Gestão de usuários, grupos e permissões (chmod, chown, sudo)',
+          'Conceitos de Hypervisor (Tipo 1 e Tipo 2), VMs vs Containers (Docker)'
+        ],
+        channel: 'Curso em Vídeo (Linux) + Miak Biazi (Virtualização)',
+        searchUrl: 'https://www.youtube.com/results?search_query=curso+em+video+linux'
+      },
+      qui: {
+        day: 'Quinta-feira',
+        focus: 'AWS Core Services: Compute, Storage & Redes VPC',
+        questions: 30,
+        topics: [
+          'Amazon EC2 (instâncias, AMI, pares de chaves) e Elastic Load Balancing',
+          'Amazon S3 (buckets, políticas, classes de armazenamento) e EBS',
+          'Arquitetura VPC: Subnets públicas/privadas, Internet Gateway e Security Groups'
+        ],
+        channel: 'Revisão AWS + Material Didático Cloud',
+        searchUrl: 'https://www.youtube.com/results?search_query=AWS+Cloud+Practitioner+portugues+EC2+S3+VPC'
+      },
+      sex: {
+        day: 'Sexta-feira',
+        focus: 'AWS Segurança (IAM), Bancos de Dados & Simulado Intensivo',
+        questions: 30,
+        topics: [
+          'AWS IAM: Princípio do menor privilégio, Roles, Policies e MFA',
+          'Amazon RDS vs DynamoDB e serviços gerenciados (Lambda, CloudWatch)',
+          'Simulado cronometrado de 30 questões focado na prova AWS da próxima semana'
+        ],
+        channel: 'Simulados AWS + Revisão de Erros',
+        searchUrl: 'https://www.youtube.com/results?search_query=simulado+AWS+Cloud+Practitioner+comentado'
+      },
+      sab: {
+        day: 'Sábado',
+        focus: 'Gestão de TI (Faculdade), Labs Práticos & Preparação Estágio',
+        questions: 15,
+        topics: [
+          'Governança e Gestão de Serviços: ITIL v4, COBIT, SLA, Incidentes vs Problemas',
+          'Laboratório prático: subir uma instância EC2 Linux ou configurar rede no Packet Tracer',
+          'Atualizar LinkedIn/GitHub com resumo do que aprendeu na semana'
+        ],
+        channel: 'Material Faculdade Gestão de TI + Prática',
+        searchUrl: 'https://www.youtube.com/results?search_query=ITIL+4+resumo+gestao+de+TI'
+      },
+      dom: {
+        day: 'Domingo',
+        focus: 'Descanso Estratégico & Consolidação da Memória',
+        questions: 0,
+        topics: [],
+        channel: 'Dia livre de telas de estudo',
+        searchUrl: ''
+      }
+    };
+
+    const cheatsheets = [
+      { title: 'Portas TCP/UDP Mais Cobradas', tag: 'Redes', body: '<code>21</code> FTP • <code>22</code> SSH • <code>23</code> Telnet • <code>25</code> SMTP • <code>53</code> DNS • <code>67/68</code> DHCP • <code>80</code> HTTP • <code>443</code> HTTPS • <code>3389</code> RDP' },
+      { title: 'Camadas Modelo OSI (7 → 1)', tag: 'Redes', body: '7. Aplicação • 6. Apresentação • 5. Sessão • 4. Transporte (TCP/UDP) • 3. Rede (IP/Roteador) • 2. Enlace (MAC/Switch) • 1. Física (Cabos/Bits)' },
+      { title: 'Comandos Linux Essenciais', tag: 'Linux', body: '<code>ls -la</code> listar ocultos • <code>chmod 755</code> permissões • <code>ps aux</code> processos • <code>ss -tuln</code> portas abertas • <code>df -h</code> disco • <code>grep</code> filtrar texto' },
+      { title: 'AWS Compute & Storage', tag: 'AWS', body: '<strong>EC2:</strong> Servidores virtuais • <strong>Lambda:</strong> Serverless • <strong>S3:</strong> Objetos ilimitados • <strong>EBS:</strong> Disco acoplado à EC2 • <strong>EFS:</strong> Sistema de arquivos compartilhado' },
+      { title: 'AWS Segurança & Monitoramento', tag: 'AWS', body: '<strong>IAM:</strong> Identidade e acesso • <strong>CloudTrail:</strong> Auditoria de logs/API • <strong>CloudWatch:</strong> Métricas e alarmes • <strong>Shield/WAF:</strong> Proteção DDoS e web' },
+      { title: 'Gestão de TI (ITIL & COBIT)', tag: 'Faculdade', body: '<strong>Incidente:</strong> Restaurar serviço rápido • <strong>Problema:</strong> Investigar causa raiz • <strong>SLA:</strong> Acordo de Nível de Serviço • <strong>COBIT:</strong> Governança corporativa de TI' }
+    ];
+
+    const quizQuestions = [
+      {
+        q: '1. Qual serviço da AWS permite criar uma rede virtual logicamente isolada na nuvem?',
+        opts: ['Amazon Route 53', 'Amazon VPC', 'AWS Direct Connect', 'Amazon CloudFront'],
+        ans: 1,
+        exp: 'Amazon VPC (Virtual Private Cloud) permite definir seu próprio espaço de endereços IP, sub-redes e tabelas de roteamento.'
+      },
+      {
+        q: '2. Qual porta padrão é utilizada pelo protocolo SSH para acesso remoto seguro em servidores Linux?',
+        opts: ['Porta 21', 'Porta 22', 'Porta 80', 'Porta 3389'],
+        ans: 1,
+        exp: 'SSH (Secure Shell) opera na porta TCP 22, substituindo o inseguro Telnet (porta 23).'
+      },
+      {
+        q: '3. Na AWS, qual recurso deve ser usado para conceder permissões temporárias a uma instância EC2 acessar um bucket S3 sem salvar chaves de acesso no código?',
+        opts: ['IAM User', 'IAM Group', 'IAM Role', 'AWS Organizations'],
+        ans: 2,
+        exp: 'IAM Roles fornecem credenciais temporárias e seguras para serviços como EC2, seguindo as boas práticas da AWS.'
+      },
+      {
+        q: '4. Em qual camada do Modelo OSI opera um Switch tradicional baseado em endereços MAC?',
+        opts: ['Camada 1 (Física)', 'Camada 2 (Enlace)', 'Camada 3 (Rede)', 'Camada 4 (Transporte)'],
+        ans: 1,
+        exp: 'Switches encaminham quadros (frames) utilizando endereços físicos MAC na Camada 2 (Enlace).'
+      },
+      {
+        q: '5. Qual opção de compra do Amazon EC2 oferece os maiores descontos (até 90%) para cargas de trabalho tolerantes a falhas que podem ser interrompidas?',
+        opts: ['On-Demand Instances', 'Reserved Instances', 'Spot Instances', 'Dedicated Hosts'],
+        ans: 2,
+        exp: 'Instâncias Spot aproveitam capacidade ociosa da AWS com até 90% de desconto, podendo ser retomadas com aviso de 2 minutos.'
+      },
+      {
+        q: '6. No Linux, qual comando altera as permissões de leitura, escrita e execução de um arquivo?',
+        opts: ['chown', 'chmod', 'mkdir', 'systemctl'],
+        ans: 1,
+        exp: 'chmod (change mode) altera permissões (r=4, w=2, x=1); chown altera o proprietário.'
+      },
+      {
+        q: '7. Qual serviço AWS audita e registra todas as chamadas de API feitas na sua conta para fins de conformidade e governança?',
+        opts: ['Amazon CloudWatch', 'AWS CloudTrail', 'AWS Trusted Advisor', 'Amazon Inspector'],
+        ans: 1,
+        exp: 'AWS CloudTrail registra quem fez o quê, quando e de qual IP na conta AWS.'
+      },
+      {
+        q: '8. Qual protocolo traduz nomes de domínio (ex: aws.amazon.com) em endereços IP?',
+        opts: ['DHCP', 'ARP', 'DNS', 'ICMP'],
+        ans: 2,
+        exp: 'DNS (Domain Name System) opera na porta 53 e resolve nomes legíveis em endereços IP.'
+      },
+      {
+        q: '9. Na gestão de serviços de TI (ITIL), qual é o objetivo principal do Gerenciamento de Incidentes?',
+        opts: ['Descobrir a causa raiz definitiva', 'Restaurar a operação normal do serviço o mais rápido possível', 'Aprovar novos orçamentos de hardware', 'Auditar contratos financeiros'],
+        ans: 1,
+        exp: 'Incidentes focam em restaurar o serviço rapidamente; Problemas investigam a causa raiz.'
+      },
+      {
+        q: '10. Qual classe de armazenamento do Amazon S3 é ideal para arquivamento de longo prazo com o menor custo possível?',
+        opts: ['S3 Standard', 'S3 Intelligent-Tiering', 'S3 Glacier Deep Archive', 'S3 One Zone-IA'],
+        ans: 2,
+        exp: 'S3 Glacier Deep Archive oferece o menor custo de armazenamento para dados raramente acessados (retenção de anos).'
+      }
+    ];
+
+    const careerTasks = [
+      { id: 'c1', title: 'Criar conta AWS Free Tier com MFA e Alerta de Faturamento (Billing Alarm)', desc: 'Evita surpresas na fatura e mostra responsabilidade operacional.' },
+      { id: 'c2', title: 'Subir 1 servidor web Nginx em uma EC2 Linux e documentar no GitHub', desc: 'Projeto prático excelente para citar em entrevistas de estágio.' },
+      { id: 'c3', title: 'Montar topologia de rede com 2 sub-redes e roteamento no Cisco Packet Tracer', desc: 'Comprova domínio prático de IP, máscara e gateway.' },
+      { id: 'c4', title: 'Otimizar LinkedIn com palavras-chave: Infraestrutura, Redes, Linux, AWS, Gestão de TI', desc: 'Recrutadores filtram exatamente por esses termos.' },
+      { id: 'c5', title: 'Preparar pitch de 1 minuto conectando Gestão de TI + Infra/Cloud', desc: 'Mostre que você entende tanto da técnica quanto do impacto no negócio.' }
+    ];
+
+    let state = JSON.parse(localStorage.getItem('cloudops_state_v2')) || {
+      completedTopics: {},
+      awsSprint: {},
+      career: {},
+      notes: {},
+      scores: [
+        { title: 'Diagnóstico Inicial Redes', score: 72, date: 'Base' }
+      ],
+      examDate: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
+      sepia: false
+    };
+
+    let currentDay = 'seg';
+    let userQuizAnswers = {};
+
+    function saveState() {
+      localStorage.setItem('cloudops_state_v2', JSON.stringify(state));
+      updateKPIs();
+    }
+
+    function switchTab(id, btn) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+
+    function toggleSepia() {
+      state.sepia = !state.sepia;
+      document.body.classList.toggle('sepia-mode', state.sepia);
+      document.getElementById('sepia-status').textContent = state.sepia ? 'ON' : 'OFF';
+      saveState();
+    }
+
+    function updateCountdown() {
+      const input = document.getElementById('exam-date-input');
+      if (input.value) state.examDate = input.value;
+      const diff = Math.ceil((new Date(state.examDate + 'T23:59:59') - new Date()) / 86400000);
+      const el = document.getElementById('countdown-text');
+      if (diff > 1) el.textContent = `Faltam ${diff} dias`;
+      else if (diff === 1) el.textContent = `É amanhã! Revisão leve ✨`;
+      else if (diff === 0) el.textContent = `Hoje é o dia! Você consegue 🌸`;
+      else el.textContent = `Prova concluída!`;
+      saveState();
+    }
+
+    function renderAwsSprint() {
+      const container = document.getElementById('aws-sprint-list');
+      container.innerHTML = awsSprintDomains.map(d => {
+        const done = !!state.awsSprint[d.id];
+        return `
+          <label class="checklist-item ${done ? 'done' : ''}">
+            <input type="checkbox" ${done ? 'checked' : ''} onchange="toggleAwsSprint('${d.id}')">
+            <div>
+              <div style="font-weight:700; font-size:14px;">${d.title}</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${d.desc}</div>
+            </div>
+          </label>
+        `;
+      }).join('');
+    }
+
+    function toggleAwsSprint(id) {
+      state.awsSprint[id] = !state.awsSprint[id];
+      renderAwsSprint();
+      saveState();
+    }
+
+    function renderSchedule() {
+      const tabsEl = document.getElementById('day-tabs');
+      const days = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom'];
+      const labels = { seg: 'Seg • Redes', ter: 'Ter • Roteamento', qua: 'Qua • Linux/Virt', qui: 'Qui • AWS Core', sex: 'Sex • AWS Sec/DB', sab: 'Sáb • Gestão/Labs', dom: 'Dom • Descanso' };
+      tabsEl.innerHTML = days.map(d => `
+        <button class="day-tab ${currentDay === d ? 'active' : ''}" onclick="selectDay('${d}')">${labels[d]}</button>
+      `).join('');
+
+      const info = scheduleData[currentDay];
+      const box = document.getElementById('day-content');
+
+      if (currentDay === 'dom') {
+        box.innerHTML = `
+          <div style="text-align:center; padding:24px 12px;">
+            <div style="font-size:38px; margin-bottom:10px;">🌿☕</div>
+            <h3>Domingo: Descanso Estratégico & Autocuidado</h3>
+            <p style="font-size:14px; color:var(--text-muted); max-width:560px; margin:8px auto 18px;">
+              O cérebro consolida conexões neurais de redes, comandos Linux e arquitetura AWS durante o descanso. Aproveite para recarregar as energias!
+            </p>
+            <div style="max-width:540px; margin:0 auto; text-align:left;">
+              <label style="font-size:13px; font-weight:600;">Lembretes leves para começar a segunda-feira organizada:</label>
+              <textarea rows="3" placeholder="Ex: Revisar anotações de sub-redes antes da aula..." oninput="saveNote('dom', this.value)">${state.notes['dom'] || ''}</textarea>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const topicsHtml = info.topics.map((t, idx) => {
+        const key = `${currentDay}_${idx}`;
+        const done = !!state.completedTopics[key];
+        return `
+          <label class="checklist-item ${done ? 'done' : ''}">
+            <input type="checkbox" ${done ? 'checked' : ''} onchange="toggleTopic('${key}')">
+            <span style="font-size:14px; font-weight:500;">${t}</span>
+          </label>
+        `;
+      }).join('');
+
+      box.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+          <div>
+            <span class="tag">${info.day}</span>
+            <h3 style="margin-top:8px;">${info.focus}</h3>
+            <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Fonte recomendada: <strong>${info.channel}</strong></p>
+          </div>
+          <span class="tag sage" style="font-size:13px; padding:6px 14px;">🎯 Meta: ${info.questions} questões</span>
+        </div>
+
+        <div style="margin-bottom:16px;">${topicsHtml}</div>
+
+        <div class="yt-links">
+          <a class="btn btn-primary" href="${info.searchUrl}" target="_blank">▶ Assistir Aulas do Dia no YouTube</a>
+        </div>
+
+        <div style="margin-top:18px;">
+          <label style="font-size:13px; font-weight:600;">📝 Caderno de Anotações & Resumo de Erros (${info.day}):</label>
+          <textarea rows="4" placeholder="Anote aqui conceitos-chave da faculdade, comandos Linux ou questões que você errou..." oninput="saveNote('${currentDay}', this.value)">${state.notes[currentDay] || ''}</textarea>
+        </div>
+      `;
+    }
+
+    function selectDay(d) {
+      currentDay = d;
+      renderSchedule();
+    }
+
+    function toggleTopic(key) {
+      state.completedTopics[key] = !state.completedTopics[key];
+      renderSchedule();
+      saveState();
+    }
+
+    function saveNote(day, val) {
+      state.notes[day] = val;
+      localStorage.setItem('cloudops_state_v2', JSON.stringify(state));
+    }
+
+    function renderCheatsheets() {
+      const q = (document.getElementById('cheat-search').value || '').toLowerCase();
+      const filtered = cheatsheets.filter(c => c.title.toLowerCase().includes(q) || c.body.toLowerCase().includes(q) || c.tag.toLowerCase().includes(q));
+      document.getElementById('cheat-grid').innerHTML = filtered.map(c => `
+        <div class="card">
+          <span class="tag amber">${c.tag}</span>
+          <h4 style="margin:8px 0;">${c.title}</h4>
+          <p style="font-size:13px; line-height:1.65; color:var(--text-main);">${c.body}</p>
+        </div>
+      `).join('');
+    }
+
+    function renderQuiz() {
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = quizQuestions.map((item, qIdx) => {
+        const chosen = userQuizAnswers[qIdx];
+        const optsHtml = item.opts.map((opt, oIdx) => {
+          let cls = 'quiz-option';
+          if (chosen !== undefined) {
+            if (oIdx === item.ans) cls += ' correct';
+            else if (oIdx === chosen) cls += ' wrong';
+          }
+          return `<button class="${cls}" onclick="answerQuiz(${qIdx}, ${oIdx})">${opt}</button>`;
+        }).join('');
+
+        return `
+          <div style="padding:14px; border-radius:14px; background:var(--bg-main); border:1px solid var(--border-soft); margin-bottom:12px;">
+            <div style="font-weight:700; font-size:14px;">${item.q}</div>
+            ${optsHtml}
+            ${chosen !== undefined ? `<div style="font-size:12px; color:var(--sage); margin-top:8px; font-weight:600;">💡 ${item.exp}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function answerQuiz(qIdx, oIdx) {
+      if (userQuizAnswers[qIdx] !== undefined) return;
+      userQuizAnswers[qIdx] = oIdx;
+      renderQuiz();
+    }
+
+    function finishQuiz() {
+      const answered = Object.keys(userQuizAnswers).length;
+      if (answered < quizQuestions.length) {
+        alert(`Responda todas as ${quizQuestions.length} questões antes de salvar a nota! (Respondidas: ${answered}/${quizQuestions.length})`);
+        return;
+      }
+      let correct = 0;
+      quizQuestions.forEach((q, idx) => { if (userQuizAnswers[idx] === q.ans) correct++; });
+      const pct = Math.round((correct / quizQuestions.length) * 100);
+      state.scores.push({ title: `Simulado Plataforma (${correct}/10)`, score: pct, date: new Date().toLocaleDateString('pt-BR') });
+      saveState();
+      renderScores();
+      alert(`Simulado finalizado! Sua nota: ${pct}% (${correct} de 10 acertos).`);
+    }
+
+    function resetQuiz() {
+      userQuizAnswers = {};
+      renderQuiz();
+    }
+
+    function addManualScore() {
+      const title = document.getElementById('score-title').value.trim();
+      const val = parseFloat(document.getElementById('score-val').value);
+      if (!title || isNaN(val) || val < 0 || val > 100) {
+        alert('Preencha o nome do simulado e uma nota válida entre 0 e 100.');
+        return;
+      }
+      state.scores.push({ title, score: val, date: new Date().toLocaleDateString('pt-BR') });
+      document.getElementById('score-title').value = '';
+      document.getElementById('score-val').value = '';
+      saveState();
+      renderScores();
+    }
+
+    function renderScores() {
+      const list = document.getElementById('score-history-list');
+      list.innerHTML = state.scores.slice().reverse().map(s => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-radius:10px; background:var(--bg-main); border:1px solid var(--border-soft); margin-bottom:8px;">
+          <div>
+            <div style="font-weight:600; font-size:13px;">${s.title}</div>
+            <div style="font-size:11px; color:var(--text-muted);">${s.date}</div>
+          </div>
+          <span class="tag ${s.score >= 80 ? 'sage' : ''}">${s.score}%</span>
+        </div>
+      `).join('');
+
+      // Simple SVG chart
+      const chartBox = document.getElementById('score-chart-box');
+      if (state.scores.length > 0) {
+        const w = 420, h = 130, pad = 20;
+        const pts = state.scores.map((s, i) => {
+          const x = state.scores.length === 1 ? w / 2 : pad + (i * (w - pad * 2)) / (state.scores.length - 1);
+          const y = h - pad - ((s.score / 100) * (h - pad * 2));
+          return `${x},${y}`;
+        }).join(' ');
+        const goalY = h - pad - (0.8 * (h - pad * 2));
+        chartBox.innerHTML = `
+          <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Evolução de Notas (Linha tracejada = Meta 80%)</div>
+          <svg viewBox="0 0 ${w} ${h}" style="width:100%; height:130px; background:var(--bg-main); border-radius:12px; border:1px solid var(--border-soft);">
+            <line x1="${pad}" y1="${goalY}" x2="${w - pad}" y2="${goalY}" stroke="#5B8C78" stroke-dasharray="4" stroke-width="1.5" />
+            <polyline fill="none" stroke="#C96B78" stroke-width="3" points="${pts}" />
+            ${state.scores.map((s, i) => {
+              const x = state.scores.length === 1 ? w / 2 : pad + (i * (w - pad * 2)) / (state.scores.length - 1);
+              const y = h - pad - ((s.score / 100) * (h - pad * 2));
+              return `<circle cx="${x}" cy="${y}" r="4.5" fill="#C96B78" />`;
+            }).join('')}
+          </svg>
+        `;
+      }
+    }
+
+    function renderCareer() {
+      document.getElementById('career-checklist').innerHTML = careerTasks.map(c => {
+        const done = !!state.career[c.id];
+        return `
+          <label class="checklist-item ${done ? 'done' : ''}">
+            <input type="checkbox" ${done ? 'checked' : ''} onchange="toggleCareer('${c.id}')">
+            <div>
+              <div style="font-weight:700; font-size:14px;">${c.title}</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${c.desc}</div>
+            </div>
+          </label>
+        `;
+      }).join('');
+    }
+
+    function toggleCareer(id) {
+      state.career[id] = !state.career[id];
+      renderCareer();
+      saveState();
+    }
+
+    function updateKPIs() {
+      const totalTopics = 18;
+      const doneTopics = Object.values(state.completedTopics).filter(Boolean).length;
+      const pct = Math.round((doneTopics / totalTopics) * 100);
+      document.getElementById('kpi-weekly-pct').textContent = `${pct}%`;
+      document.getElementById('kpi-weekly-sub').textContent = `${doneTopics} de ${totalTopics} tópicos concluídos`;
+      document.getElementById('kpi-weekly-bar').style.width = `${pct}%`;
+
+      const estQuestions = Math.round((doneTopics / totalTopics) * 150);
+      document.getElementById('kpi-questions').textContent = `${estQuestions} / 150`;
+
+      const doneAws = Object.values(state.awsSprint).filter(Boolean).length;
+      document.getElementById('kpi-aws-sprint').textContent = `${doneAws} / ${awsSprintDomains.length}`;
+
+      if (state.scores.length > 0) {
+        const avg = Math.round(state.scores.reduce((a, b) => a + b.score, 0) / state.scores.length);
+        document.getElementById('kpi-avg-score').textContent = `${avg}%`;
+      }
+    }
+
+    // Init
+    if (state.sepia) {
+      document.body.classList.add('sepia-mode');
+      document.getElementById('sepia-status').textContent = 'ON';
+    }
+    document.getElementById('exam-date-input').value = state.examDate;
+    updateCountdown();
+    renderAwsSprint();
+    renderSchedule();
+    renderCheatsheets();
+    renderQuiz();
+    renderScores();
+    renderCareer();
+    updateKPIs();
+  </script>
+</body>
+</html>
